@@ -1,0 +1,31 @@
+﻿<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Clothes
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a asp-page="/ShopType" asp-route-product="Shirts" asp-route-identity="@Model.Identity" class="dropdown-item">Shirts</a>
+                    <a asp-page="/ShopType" asp-route-product="Jeans" asp-route-identity="@Model.Identity" class="dropdown-item">Jeans</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Shoes
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <a asp-page="/ShopType" asp-route-product="Trainers" asp-route-identity="@Model.Identity" class="dropdown-item">Trainers</a>
+
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Accessories
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>

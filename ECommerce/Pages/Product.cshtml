@@ -1,0 +1,24 @@
+﻿@page
+@using ECommerce.Pages
+@model ECommerce.Pages.ProductModel
+@{
+    ViewData["Title"] = @Model.Product.Name;
+}
+
+<div class="row">
+    <div class="col col-lg-6">
+        <img class="card-img-top" src="images/@Model.Identity/@Model.Product.Image" alt="Card image cap">
+    </div>
+    <div class="col col-lg-6">
+        <h3>@Model.Product.Name</h3>
+        <p>@Model.Product.Price.ToString("C")</p>
+        <p>Color: @Model.Product.Colour</p>
+        <p>Size: </p>
+        <form asp-route-id="@Model.Product.Id" method="post">
+            <div class="row">
+                <button class="btn btn-primary">Add to bag</button>
+                <a class="fas fa-heart"></a>
+            </div>
+        </form>
+    </div>
+</div>

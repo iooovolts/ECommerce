@@ -1,0 +1,40 @@
+﻿@page
+@using ECommerce.Pages
+@model ECommerce.Pages.ShoppingBagModel
+@{
+    ViewData["Title"] = "ShoppingBag";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.ShoppingBagItems)
+        {
+            <tr>
+                <td>
+                    @item.Product.Name
+                </td>
+                <td>
+                    @item.Price
+                </td>
+                <td>
+                    <input value="@item.Quantity" size="1" class="text-center" />
+                </td>
+                <td>
+                    <form asp-route-id="@item.Product.Id" asp-page-handler="delete" method="post">
+                        <button class="close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
