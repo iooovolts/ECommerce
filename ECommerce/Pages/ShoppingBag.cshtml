@@ -4,37 +4,117 @@
 @{
     ViewData["Title"] = "ShoppingBag";
 }
+@{var subtotal = 0.00;}
+@Html.AntiForgeryToken()
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">Item</th>
-            <th scope="col">Price</th>
-            <th scope="col">Quantity</th>
-        </tr>
-    </thead>
-    <tbody>
+<strong><h4>My Bag</h4></strong>
+<hr />
+<div class="row">
+    <div class="col-lg-5">
         @foreach (var item in Model.ShoppingBagItems)
         {
-            <tr>
-                <td>
-                    @item.Product.Name
-                </td>
-                <td>
-                    @item.Price
-                </td>
-                <td>
-                    <input value="@item.Quantity" size="1" class="text-center" />
-                </td>
-                <td>
-                    <form asp-route-id="@item.Product.Id" asp-page-handler="delete" method="post">
-                        <button class="close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </form>
-                </td>
-            </tr>
+            <div data-id="@item.Product.Id" data-quantity="@item.Quantity" class="card mb-3" style="max-width: 540px;">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img src="images/Products/@item.Product.Image" class="card-img" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <button class="close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h5 class="card-title">@item.Product.Name</h5>
+                            <p class="card-text">@item.Price.ToString("C")</p>
+                            <input class="card-text text-center" value="@item.Quantity" size="1" />
+                            <a class="heart">
+                                <i class="far fa-heart heart-empty"></i>
+                                <i class="fas fa-heart heart-solid"></i>&nbsp;&nbsp;&nbsp;Add to Wish List
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            subtotal += item.Price;
         }
-    </tbody>
-</table>
+        <strong>Subtotal - @subtotal.ToString("C")</strong>
+    </div>
 
+    <div id="paypal-button-container" class="card col-lg-4" style="height: 20rem">
+        <strong>TOTAL</strong>
+        <hr />
+        <table>
+            <tr>
+                <td><strong>Subtotal</strong></td>
+                <td class="text-right">@subtotal.ToString("C")</td>
+            </tr>
+            <tr>
+                <td><strong>Delivery</strong></td>
+                <td class="text-right">N/A</td>
+            </tr>
+        </table>
+        <hr />
+    </div>
+</div>
+
+<script>
+    paypal.Buttons({
+        createOrder: function (data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: '@subtotal'
+                    }
+                }]
+            });
+        },
+        onApprove: function (data, actions) {
+            // Capture the funds from the transaction
+            return actions.order.capture().then(function(details) {
+                // Show a success message to your buyer
+                alert('Transaction completed by ' + details.purchase_units.amount);
+                $.ajax({
+                    type: 'POST',
+                    url: 'ShoppingBag?handler=Checkout',
+                    headers: {
+                        "XSRF-TOKEN": $('input:hidden[name="__RequestVerificationToken"]').val()
+                    },
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    data: '' + details.purchase_units.amount + ''
+                    ,
+                    success: function (response) {
+
+                    },
+                    complete: function (response) {
+                        console.log("Payment complete");
+                    }
+                });
+            });
+        }
+    }).render('#paypal-button-container');
+
+    $('.close').on('click',
+        function (e) {
+            var temp = $(this).closest('div.card');
+            var id = temp.data('id');
+
+            $.ajax({
+                type: 'POST',
+                url: 'ShoppingBag?handler=Delete',
+                headers: {
+                    "XSRF-TOKEN": $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: '' + id + '',
+                success: function (response) {
+
+                },
+                complete: function (response) {
+                    console.log("Complete works");
+                    temp.fadeOut();
+                }
+            });
+        }
+    );
+</script>

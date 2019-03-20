@@ -4,14 +4,16 @@ using ECommerce.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ECommerce.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190319223529_OrderTableRemodeled")]
+    partial class OrderTableRemodeled
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -19,32 +21,19 @@ namespace ECommerce.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("ECommerce.Models.GenderCategory", b =>
+            modelBuilder.Entity("ECommerce.Data.Models.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Gender");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("GenderCategories");
-                });
-
-            modelBuilder.Entity("ECommerce.Models.Order", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Fufilled");
+                    b.Property<bool>("IsComplete");
 
                     b.Property<DateTime>("OrderDate");
 
-                    b.Property<int>("OrderNumber");
-
                     b.Property<int?>("ProductId");
+
+                    b.Property<double>("TotalAmount");
 
                     b.Property<string>("UserAccountId");
 
@@ -57,23 +46,17 @@ namespace ECommerce.Data.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("ECommerce.Models.Payment", b =>
+            modelBuilder.Entity("ECommerce.Models.GenderCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Amount");
-
-                    b.Property<DateTime>("Date");
-
-                    b.Property<int?>("OrderId");
+                    b.Property<string>("Gender");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("Payments");
+                    b.ToTable("GenderCategories");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Product", b =>
@@ -335,7 +318,7 @@ namespace ECommerce.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("ECommerce.Models.Order", b =>
+            modelBuilder.Entity("ECommerce.Data.Models.Order", b =>
                 {
                     b.HasOne("ECommerce.Models.Product", "Product")
                         .WithMany()
@@ -344,13 +327,6 @@ namespace ECommerce.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "UserAccount")
                         .WithMany()
                         .HasForeignKey("UserAccountId");
-                });
-
-            modelBuilder.Entity("ECommerce.Models.Payment", b =>
-                {
-                    b.HasOne("ECommerce.Models.Order", "Order")
-                        .WithMany()
-                        .HasForeignKey("OrderId");
                 });
 
             modelBuilder.Entity("ECommerce.Models.Product", b =>

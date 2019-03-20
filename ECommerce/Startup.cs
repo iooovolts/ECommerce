@@ -41,6 +41,11 @@ namespace ECommerce
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddTransient<IShopService, ShopService>();
+            services.AddAntiforgery(option =>
+            {
+                option.HeaderName = "XSRF-TOKEN";
+                option.SuppressXFrameOptionsHeader = false;
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }

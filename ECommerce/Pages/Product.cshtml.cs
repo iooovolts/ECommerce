@@ -1,9 +1,12 @@
-﻿using ECommerce.Models;
+﻿using System;
+using System.IO;
+using ECommerce.Models;
 using ECommerce.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ECommerce.Pages
 {
@@ -29,7 +32,17 @@ namespace ECommerce.Pages
 
         public void OnPost(int id)
         {
-            _shopService.AddProductToBag(_shopService.GetProduct(id), GetCurrentUserAsync().Result);
+            var stream = new MemoryStream();
+            Request.Body.CopyTo(stream);
+            stream.Position = 0;
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                var requestBody = reader.ReadToEnd();
+                if (requestBody.Length > 0)
+                {
+                    _shopService.AddProductToBag(_shopService.GetProduct(Convert.ToInt32(requestBody)), GetCurrentUserAsync().Result);
+                }
+            }
         }
     }
 }

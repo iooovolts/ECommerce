@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ECommerce.Data.Models;
 
 namespace ECommerce.Services
 {
@@ -16,6 +17,7 @@ namespace ECommerce.Services
         Product GetProduct(int id);
         void AddProductToBag(Product product, IdentityUser user);
         void DeleteShoppingBagItem(int productId, string userId);
+        void CreateOrder(double totalAmount, List<ShoppingBagItem> shoppingBagItems, IdentityUser user);
     }
     public class ShopService : IShopService
     {
@@ -93,6 +95,32 @@ namespace ECommerce.Services
             SaveChanges();
         }
 
+        public void CreateOrder(double totalAmount, List<ShoppingBagItem> shoppingBagItems, IdentityUser user)
+        {
+            //var orderProducts = new List<OrderProduct>();
+            //foreach (var item in shoppingBagItems)
+            //{
+            //    orderProducts.Add(new OrderProduct
+            //    {
+            //        Quantity = item.Quantity,
+            //        Order = 
+            //    });
+                
+            //}
+
+            var order = new Order
+            {
+                TotalAmount = totalAmount,
+                UserAccount = user,
+                OrderDate = DateTime.Now
+            };
+
+            _context.Orders.Add(order);
+            SaveChanges();
+        }
+
+        
+
         public void CreateBag(IdentityUser user)
         {
             var cart = new ShoppingBag
@@ -114,11 +142,6 @@ namespace ECommerce.Services
             return true;
         }
 
-        /// <summary>
-        /// Checks whether a product is already in the users bag
-        /// </summary>
-        /// <param name="product"></param>
-        /// <returns></returns>
         private bool IsAlreadyInBag(Product product)
         {
             var query = from c in _context.ShoppingBagItems

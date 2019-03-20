@@ -5,20 +5,43 @@
     ViewData["Title"] = @Model.Product.Name;
 }
 
+@Html.AntiForgeryToken()
 <div class="row">
     <div class="col col-lg-6">
-        <img class="card-img-top" src="images/@Model.Identity/@Model.Product.Image" alt="Card image cap">
+        <img class="card-img-top" src="images/Products/@Model.Product.Image" alt="Card image cap">
     </div>
     <div class="col col-lg-6">
         <h3>@Model.Product.Name</h3>
         <p>@Model.Product.Price.ToString("C")</p>
         <p>Color: @Model.Product.Colour</p>
         <p>Size: </p>
-        <form asp-route-id="@Model.Product.Id" method="post">
-            <div class="row">
-                <button class="btn btn-primary">Add to bag</button>
-                <a class="fas fa-heart"></a>
-            </div>
-        </form>
+        <div class="row">
+            <button id="result" onclick="addToBag()" class="btn btn-primary">Add to bag</button>
+            <a class="fas fa-heart"></a>
+        </div>
     </div>
 </div>
+
+<script>
+    function addToBag() {
+        $.ajax({
+            type: 'POST',
+            url: 'Product?handler',
+            headers: {
+                "XSRF-TOKEN": $('input:hidden[name="__RequestVerificationToken"]').val()
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: '@Model.Product.Id',
+            sucess: function(response) {   }
+        });
+        appearing();
+    }
+
+    function appearing(){
+        document.getElementById("result").innerHTML = "Added";
+        setTimeout(function(){ 
+            document.getElementById("result").innerHTML = "Add to bag";
+        }, 5000);
+    }
+</script>
