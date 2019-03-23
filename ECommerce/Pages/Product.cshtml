@@ -8,16 +8,39 @@
 @Html.AntiForgeryToken()
 <div class="row">
     <div class="col col-lg-6">
-        <img class="card-img-top" src="images/Products/@Model.Product.Image" alt="Card image cap">
+        <img data-id="@Model.Product.Id" class="card-img-top" src="images/Products/@Model.Product.Image" alt="Card image cap">
     </div>
     <div class="col col-lg-6">
-        <h3>@Model.Product.Name</h3>
-        <p>@Model.Product.Price.ToString("C")</p>
-        <p>Color: @Model.Product.Colour</p>
-        <p>Size: </p>
-        <div class="row">
+        <div>
+            <h3>@Model.Product.Name</h3>
+            <p>@Model.Product.Price.ToString("C")</p>
+            <p>Color: @Model.Product.Colour</p>
+            <p>Size: </p>
             <button id="result" onclick="addToBag()" class="btn btn-primary">Add to bag</button>
-            <a class="fas fa-heart"></a>
+            <a class="heart">
+                <button class="btn-borderless" onClick="addToWishList()">
+                    <i class="far fa-heart heart-empty"></i>
+                    <i class="fas fa-heart heart-solid"></i>
+                    &nbsp;&nbsp;&nbsp;Add to Wish List
+                </button>
+            </a>
+            <p/>
+            <div class="accordion" id="accordionExample">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                Description
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div class="card-body">
+                            @Model.Product.Description
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -33,15 +56,35 @@
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',
             data: '@Model.Product.Id',
-            sucess: function(response) {   }
+            sucess: function(response) {}
         });
-        appearing();
+        addedBag();
     }
 
-    function appearing(){
+    function addedBag() {
         document.getElementById("result").innerHTML = "Added";
-        setTimeout(function(){ 
-            document.getElementById("result").innerHTML = "Add to bag";
-        }, 5000);
+        setTimeout(function() {
+                document.getElementById("result").innerHTML = "Add to bag";
+            },
+            5000);
+    }
+
+    function addToWishList() {
+        $.ajax({
+            type: 'POST',
+            url: 'Product?handler=WishList',
+            headers: {
+                "XSRF-TOKEN": $('input:hidden[name="__RequestVerificationToken"]').val()
+            },
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: '@Model.Product.Id',
+            success: function(response) {
+
+            },
+            complete: function(response) {
+                console.log("Complete works");
+            }
+        });
     }
 </script>

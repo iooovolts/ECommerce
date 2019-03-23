@@ -1,0 +1,55 @@
+﻿@page
+@model ECommerce.Pages.OrderHistoryViewModel
+@{
+    ViewData["Title"] = "OrderHistoryView";
+}
+@{ var subtotal = 0.00;}
+<strong><h4>Order Details</h4></strong>
+<hr />
+
+<div class="card mb-3" style="max-width: 30vw;">
+    @{
+        if (Model.OrderProducts.Count > 1)
+        {
+            <strong style="padding: 0; margin: 0">@Model.OrderProducts.Count Items</strong>
+        }
+        else
+        {
+            <strong style="padding: 0; margin: 0">@Model.OrderProducts.Count Item</strong>
+        }
+    }
+    <hr />
+    <div class="row">
+        @foreach (var product in Model.OrderProducts)
+        {
+            <div class="col col-md-3">
+                <a asp-page="/Product" asp-route-id="@product.Product.Id"><img class="img-fluid" src="/images/Products/@product.Product.Image" alt="Card image cap" /></a>
+                <a asp-page="/Product" asp-route-id="@product.Product.Id" class="product-name"><p>@product.Product.Name</p></a>
+                <strong>@product.Product.Price.ToString("C")</strong>
+            </div>
+            subtotal = product.Product.Price;
+        }
+    </div>
+</div>
+
+<div class="card" style="max-width: 30vw;">
+    <strong>Order Total</strong>
+    <hr />
+    <table>
+        <tr>
+            <td>Subtotal</td>
+            <td><strong>@subtotal.ToString("C")</strong></td>
+        </tr>
+        <tr>
+            <td>Discount</td>
+            <td><strong>£0.00</strong></td>
+        </tr>
+    </table>
+    <hr />
+    <table>
+        <tr>
+            <td>Total</td>
+            <td><strong>@subtotal.ToString("C")</strong></td>
+        </tr>
+    </table>
+</div>

@@ -82,6 +82,12 @@ body {
   font-size: small
 }
 
+.btn-borderless {
+  padding: 0;
+  border: none;
+  background: none;
+}
+
 .heart:hover .heart-empty,
 .heart .heart-solid {
     display: none;
@@ -93,6 +99,12 @@ body {
 .fa-user, .fa-shopping-bag, .fa-heart {
   font-size: 1.5em;
   margin-left: 1em
+}
+
+.horizontal-line {
+  height: 1px;
+  line-height: 1px;
+  position: relative;
 }
 
 /* QR code generator */

@@ -1,11 +1,11 @@
 ﻿using ECommerce.Data;
+using ECommerce.Data.Models;
 using ECommerce.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using ECommerce.Data.Models;
 
 namespace ECommerce.Services
 {
@@ -17,7 +17,12 @@ namespace ECommerce.Services
         Product GetProduct(int id);
         void AddProductToBag(Product product, IdentityUser user);
         void DeleteShoppingBagItem(int productId, string userId);
-        void CreateOrder(double totalAmount, List<ShoppingBagItem> shoppingBagItems, IdentityUser user);
+        void DeleteWishListItem(int productId, string userId);
+        void CreateOrder(double totalAmount, IdentityUser user);
+        List<Order> GetOrders(string userId);
+        List<OrderProduct> GetOrderProducts(int orderId);
+        void AddProductToWishList(int productId, IdentityUser user);
+        List<WishListItem> GetWishListItems(string userId);
     }
     public class ShopService : IShopService
     {
@@ -27,17 +32,25 @@ namespace ECommerce.Services
             _context = context;
         }
 
-        public ShoppingBagItem GetShoppingBagItem(int productId, string userId)
+        private ShoppingBagItem GetShoppingBagItem(int productId, string userId)
         {
-            var query = (from c in _context.ShoppingBagItems
-                         where c.ShoppingBag.User.Id == userId && c.Product.Id == productId
-                         select c).Single();
-            return query;
+            return (from c in _context.ShoppingBagItems
+                    where c.ShoppingBag.User.Id == userId && c.Product.Id == productId
+                    select c).Single();
+
         }
+
+        private WishListItem GetWishListItem(int productId, string userId)
+        {
+            return (from c in _context.WishListItems
+                    where c.Wishlist.User.Id == userId && c.Product.Id == productId
+                    select c).Single();
+        }
+
         public List<ShoppingBagItem> GetShoppingBagItems(string userId)
         {
             return (from c in _context.ShoppingBagItems.Include(c => c.Product)
-                    where c.ShoppingBag.User.Id == userId
+                    where c.ShoppingBag.User.Id == userId && c.ShoppingBag.CheckedOut == false
                     select c).ToList();
         }
 
@@ -62,6 +75,70 @@ namespace ECommerce.Services
                     select c).Single();
         }
 
+        public List<Order> GetOrders(string userId)
+        {
+            return (from c in _context.Orders
+                    where c.UserAccount.Id == userId
+                    select c).ToList();
+        }
+
+        public List<OrderProduct> GetOrderProducts(int orderId)
+        {
+            return (from c in _context.OrderProducts.Include(c => c.Product)
+                    where c.Order.Id == orderId
+                    select c).ToList();
+        }
+
+        public void AddProductToWishList(int productId, IdentityUser user)
+        {
+            if (!WishListExists(user.Id))
+                CreateWishList(user);
+
+            var wishList = GetWishList(user.Id);
+            var wishListItem = new WishListItem
+            {
+                Product = GetProduct(productId),
+                Wishlist = wishList
+            };
+
+            _context.Add(wishListItem);
+            SaveChanges();
+        }
+
+        public List<WishListItem> GetWishListItems(string userId)
+        {
+            return (from c in _context.WishListItems.Include(c => c.Product)
+                    where c.Wishlist.User.Id == userId
+                    select c).ToList();
+        }
+
+        private void CreateWishList(IdentityUser user)
+        {
+            var wishList = new WishList
+            {
+                User = user
+            };
+            _context.Add(wishList);
+            SaveChanges();
+        }
+
+        private bool WishListExists(string userId)
+        {
+            var query = from c in _context.WishLists
+                        where c.User.Id == userId
+                        select c;
+            if (query.Any())
+                return true;
+            return false;
+        }
+
+        private WishList GetWishList(string userId)
+        {
+            return (from c in _context.WishLists
+                    where c.User.Id == userId
+                    select c).Single();
+        }
+
         public void AddProductToBag(Product product, IdentityUser user)
         {
             if (IsBackCheckedOut(user.Id))
@@ -74,7 +151,7 @@ namespace ECommerce.Services
                     Product = GetProduct(product.Id),
                     Price = product.Price,
                     Quantity = 1,
-                    ShoppingBag = GetShoppingBagId(user)
+                    ShoppingBag = GetShoppingBag(user.Id)
                 };
                 _context.ShoppingBagItems.Add(cartItem);
                 SaveChanges();
@@ -95,19 +172,14 @@ namespace ECommerce.Services
             SaveChanges();
         }
 
-        public void CreateOrder(double totalAmount, List<ShoppingBagItem> shoppingBagItems, IdentityUser user)
+        public void DeleteWishListItem(int productId, string userId)
         {
-            //var orderProducts = new List<OrderProduct>();
-            //foreach (var item in shoppingBagItems)
-            //{
-            //    orderProducts.Add(new OrderProduct
-            //    {
-            //        Quantity = item.Quantity,
-            //        Order = 
-            //    });
-                
-            //}
+            _context.WishListItems.Remove(GetWishListItem(productId, userId));
+            SaveChanges();
+        }
 
+        public void CreateOrder(double totalAmount, IdentityUser user)
+        {
             var order = new Order
             {
                 TotalAmount = totalAmount,
@@ -115,11 +187,29 @@ namespace ECommerce.Services
                 OrderDate = DateTime.Now
             };
 
+            var orderProducts = new List<OrderProduct>();
+            foreach (var item in GetShoppingBagItems(user.Id))
+            {
+                orderProducts.Add(new OrderProduct
+                {
+                    Quantity = item.Quantity,
+                    Order = order,
+                    Product = item.Product
+                });
+            }
+
+            order.OrderProduct = orderProducts;
             _context.Orders.Add(order);
+            CheckOutShoppingBag(user.Id);
             SaveChanges();
         }
 
-        
+        public void CheckOutShoppingBag(string userId)
+        {
+            var shoppingBag = GetShoppingBag(userId);
+            shoppingBag.CheckedOut = true;
+            _context.Update(shoppingBag);
+        }
 
         public void CreateBag(IdentityUser user)
         {
@@ -152,10 +242,10 @@ namespace ECommerce.Services
             return false;
         }
 
-        private ShoppingBag GetShoppingBagId(IdentityUser user)
+        private ShoppingBag GetShoppingBag(string userId)
         {
             return (from c in _context.ShoppingBags
-                    where c.CheckedOut == false && c.User.Id == user.Id
+                    where c.CheckedOut == false && c.User.Id == userId
                     select c).Single();
         }
 

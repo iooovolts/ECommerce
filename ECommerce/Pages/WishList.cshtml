@@ -4,5 +4,50 @@
     ViewData["Title"] = "WishList";
 }
 
-<h2>WishList</h2>
+<h2>Wish List</h2>
+<hr/>
 
+<div class="row">
+    @foreach (var item in Model.WishListItems)
+    {
+        <div class="col col-lg-3">
+            <div data-id="@item.Product.Id" class="card" style="width: 18rem;">
+                <a asp-page="/Product" asp-route-id="@item.Product.Id"><img class="card-img-top" src="images/Products/@item.Product.Image" alt="Card image cap"></a>
+                <div class="card-body">
+                    <a asp-page="/Product" asp-route-id="@item.Product.Id" class="product-name"><p>@item.Product.Name</p></a>
+                    <strong>@item.Product.Price.ToString("C")</strong>
+                    <button class="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<script>
+    $('.close').on('click',
+        function (e) {
+            var temp = $(this).closest('div.card');
+            var id = temp.data('id');
+
+            $.ajax({
+                type: 'POST',
+                url: 'WishList?handler=Delete',
+                headers: {
+                    "XSRF-TOKEN": $('input:hidden[name="__RequestVerificationToken"]').val()
+                },
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: '' + id + '',
+                success: function (response) {
+
+                },
+                complete: function (response) {
+                    console.log("Complete works");
+                    temp.fadeOut();
+                }
+            });
+        }
+    );
+</script>

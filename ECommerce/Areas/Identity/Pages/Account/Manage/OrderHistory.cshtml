@@ -1,0 +1,25 @@
+﻿@page
+@using ECommerce.Areas.Identity.Pages.Account.Manage
+@model OrderHistoryModel
+@{
+    ViewData["Title"] = "OrderHistory";
+}
+
+<strong><h4>My Orders</h4></strong>
+<hr />
+
+@foreach (var order in Model.Orders)
+{
+    <div class="card mb-3" style="max-width: 540px;">
+        <div class="row">
+            <div class="col-md-6"><strong>Order Number</strong> <br/> @order.Id</div>
+            <div class="col-md-6"><strong>Order Date</strong> <br /> @order.OrderDate.ToLongDateString()</div>
+        </div>
+        <hr/>
+        <div class="row">
+            <div class="col-md-6"><img src=""/></div>
+            <div class="col-md-6"><a asp-page="./OrderHistoryView" asp-route-orderId="@order.Id"><button class="btn btn-primary">View</button></a>
+            </div>
+        </div>
+    </div>
+}

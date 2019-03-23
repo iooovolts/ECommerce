@@ -12,9 +12,9 @@
     {
         <div class="col col-lg-3">
             <div class="card" style="width: 18rem;">
-                <a asp-page="/Product" asp-route-id="@item.Id" asp-route-identity="@Model.Identity"><img class="card-img-top" src="images/Products/@item.Image" alt="Card image cap"></a>
+                <a asp-page="/Product" asp-route-id="@item.Id"><img class="card-img-top" src="images/Products/@item.Image" alt="Card image cap"></a>
                 <div class="card-body">
-                    <a asp-page="/Product" asp-route-id="@item.Id" asp-route-identity="@Model.Identity" class="product-name"><p>@item.Name</p></a>
+                    <a asp-page="/Product" asp-route-id="@item.Id" class="product-name"><p>@item.Name</p></a>
                     <strong>@item.Price.ToString("C")</strong>
                 </div>
             </div>

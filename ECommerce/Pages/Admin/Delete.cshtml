@@ -1,0 +1,82 @@
+﻿@page
+@model ECommerce.Pages.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Product</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Colour)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Colour)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Brand)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Brand)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.ProductCode)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.ProductCode)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Price)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Price)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.SalePrice)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.SalePrice)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Image)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Image)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Stock)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Stock)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.DateAdded)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.DateAdded)
+        </dd>
+    </dl>
+    
+    <form method="post">
+        <input type="hidden" asp-for="Product.Id" />
+        <input type="submit" value="Delete" class="btn btn-default" /> |
+        <a asp-page="././Admin">Back to List</a>
+    </form>
+</div>

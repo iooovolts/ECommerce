@@ -1,0 +1,79 @@
+﻿@page
+@model ECommerce.Pages.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Product</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Colour)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Colour)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Description)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Description)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Brand)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Brand)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.ProductCode)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.ProductCode)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Price)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Price)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.SalePrice)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.SalePrice)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Image)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Image)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.Stock)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.Stock)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Product.DateAdded)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Product.DateAdded)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-page="./Edit" asp-route-id="@Model.Product.Id">Edit</a> |
+    <a asp-page="./Admin">Back to List</a>
+</div>

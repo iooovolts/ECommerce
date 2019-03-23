@@ -19,5 +19,7 @@ namespace ECommerce.Data
         public DbSet<GenderCategory> GenderCategories { get; set; }
         public DbSet<ShoppingBag> ShoppingBags { get; set; }
         public DbSet<ShoppingBagItem> ShoppingBagItems { get; set; }
+        public DbSet<WishList> WishLists { get; set; }
+        public DbSet<WishListItem> WishListItems { get; set; }
     }
 }

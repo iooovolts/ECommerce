@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-using ECommerce.Data.Models;
 using ECommerce.Models;
 using ECommerce.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 
 namespace ECommerce.Pages
 {
@@ -26,12 +23,16 @@ namespace ECommerce.Pages
             _shopService = shopService;
         }
         private Task<IdentityUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
-        public void OnGet()
+        public IActionResult OnGet()
         {
-            ShoppingBagItems = _shopService.GetShoppingBagItems(GetCurrentUserAsync().Result.Id);
+            if (User.Identity.IsAuthenticated)
+                ShoppingBagItems = _shopService.GetShoppingBagItems(GetCurrentUserAsync().Result.Id);
+            else
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            return Page();
         }
 
-        public JsonResult OnPostDelete()
+        public void OnPostDelete()
         {
             var stream = new MemoryStream();
             Request.Body.CopyTo(stream);
@@ -42,10 +43,8 @@ namespace ECommerce.Pages
                 if (requestBody.Length > 0)
                 {
                     _shopService.DeleteShoppingBagItem(Convert.ToInt32(requestBody), GetCurrentUserAsync().Result.Id);
-                    return new JsonResult(_shopService.GetShoppingBagItems(GetCurrentUserAsync().Result.Id));
                 }
             }
-            return null;
         }
 
         public void OnPostCheckout()
@@ -58,9 +57,24 @@ namespace ECommerce.Pages
                 var requestBody = reader.ReadToEnd();
                 if (requestBody.Length > 0)
                 {
-                    _shopService.CreateOrder(Convert.ToInt32(requestBody), ShoppingBagItems, GetCurrentUserAsync().Result);
+                    _shopService.CreateOrder(Convert.ToDouble(requestBody), GetCurrentUserAsync().Result);
                 }
             }
+        }
+
+        public void OnPostWishList()
+        {
+                var stream = new MemoryStream();
+                Request.Body.CopyTo(stream);
+                stream.Position = 0;
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    var requestBody = reader.ReadToEnd();
+                    if (requestBody.Length > 0)
+                    {
+                        _shopService.AddProductToWishList(Convert.ToInt32(requestBody), GetCurrentUserAsync().Result);
+                    }
+                }
         }
     }
 }
